@@ -1,0 +1,24 @@
+A fat kapsel plugin for sbt
+
+To build this code, get and install SBT from
+    https://github.com/sbt/sbt
+
+Get and install these plugins before building:
+    https://github.com/ritschwumm/xsbt-util
+    https://github.com/ritschwumm/xsbt-classpath
+
+Build and publish the plugin:
+    git clone git@github.com:ritschwumm/xsbt-kapsel.git
+    cd xsbt-kapsel
+    sbt publish-local
+
+Add the plugin to your project in project/plugins.sbt:
+    addSbtPlugin("de.djini" % "xsbt-kapsel" % <version>)
+
+Include the plugin in your project's build.sbt:
+
+    kapselMainClass        := Some("my.Main")
+
+    kapselVmOptions        := Seq("-Xmx128m")
+
+Run the kapsel task to get a kapsel jar.
