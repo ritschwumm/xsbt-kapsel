@@ -22,7 +22,8 @@ object Import {
 	val kapselMakeExecutable	= settingKey[Boolean]("make the jar file executable on unixoid systems")
 
 	val kapselMainClass			= taskKey[Option[String]]("name of the main class")
-	val kapselJvmOptions		= settingKey[Seq[String]]("vm options like -Xmx128")
+	val kapselVmOptions			= settingKey[Seq[String]]("vm options like -Xmx128")
+	val kapselSystemProperties	= settingKey[Map[String,String]]("-D in the command line")
 }
 
 object KapselPlugin extends AutoPlugin {
@@ -48,13 +49,14 @@ object KapselPlugin extends AutoPlugin {
 		Vector(
 			kapsel			:=
 				buildTask(
-					streams			= Keys.streams.value,
-					assets			= classpathAssets.value,
-					jarFile			= kapselJarFile.value,
-					makeExecutable	= kapselMakeExecutable.value,
-					bundleId		= kapselBundleId.value,
-					jvmOptions		= kapselJvmOptions.value,
-					mainClass		= kapselMainClass.value,
+					streams				= Keys.streams.value,
+					assets				= classpathAssets.value,
+					jarFile				= kapselJarFile.value,
+					makeExecutable		= kapselMakeExecutable.value,
+					bundleId			= kapselBundleId.value,
+					vmOptions			= kapselVmOptions.value,
+					systemProperties	= kapselSystemProperties.value,
+					mainClass			= kapselMainClass.value,
 				),
 			kapselBuildDir			:= Keys.crossTarget.value / "kapsel",
 			kapselJarFile			:= kapselBuildDir.value / (kapselBundleId.value + ".jar"),
@@ -62,7 +64,7 @@ object KapselPlugin extends AutoPlugin {
 
 			kapselBundleId			:= Keys.name.value + "-" + Keys.version.value,
 			kapselMainClass			:= (Keys.mainClass in Runtime).value,
-			kapselJvmOptions		:= Seq.empty,
+			kapselVmOptions			:= Seq.empty,
 		)
 
 	//------------------------------------------------------------------------------
@@ -75,7 +77,8 @@ object KapselPlugin extends AutoPlugin {
 		makeExecutable:Boolean,
 
 		bundleId:String,
-		jvmOptions:Seq[String],
+		vmOptions:Seq[String],
+		systemProperties:Map[String,String],
 		mainClass:Option[String],
 	):File =
 		IO withTemporaryDirectory { tempDir =>
@@ -88,6 +91,9 @@ object KapselPlugin extends AutoPlugin {
 			Using.urlInputStream(xu.classpath url kapselClassResource)(IO.transfer(_, kapselClassFile))
 			val kapselSource	= kapselClassFile -> kapselClassFileName
 
+			val systemPropertyOptions	=
+				systemProperties.map { case (k, v) => "-D" + k + "=" + v }
+
 			val assetSources	= assets map (_.flatPathMapping)
 
 			val classPath	= assetSources map (_._2)
@@ -96,7 +102,7 @@ object KapselPlugin extends AutoPlugin {
 					MANIFEST_VERSION.toString	-> "1.0",
 					MAIN_CLASS.toString			-> kapselClassName,
 					"Kapsel-Application-Id"		-> bundleId,
-					"Kapsel-Jvm-Options"		-> jvmOptions.mkString(" "),
+					"Kapsel-Jvm-Options"		-> (vmOptions ++ systemPropertyOptions).mkString(" "),
 					"Kapsel-Main-Class"			-> mainClassGot,
 					"Kapsel-Class-Path"			-> classPath.mkString(" "),
 				)
