@@ -3,7 +3,8 @@ A fat kapsel plugin for sbt
 To build this code, get and install SBT from
     https://github.com/sbt/sbt
 
-Get and install these plugins before building:
+Get and install these plugins/libs before building:
+    https://github.com/ritschwumm/kapsel
     https://github.com/ritschwumm/xsbt-util
     https://github.com/ritschwumm/xsbt-classpath
 
