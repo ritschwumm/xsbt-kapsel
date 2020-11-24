@@ -2,7 +2,7 @@ sbtPlugin		:= true
 
 name			:= "xsbt-kapsel"
 organization	:= "de.djini"
-version			:= "0.1.0"
+version			:= "0.1.1"
 
 scalacOptions	++= Seq(
 	"-feature",

@@ -65,6 +65,7 @@ object KapselPlugin extends AutoPlugin {
 			kapselBundleId			:= Keys.name.value + "-" + Keys.version.value,
 			kapselMainClass			:= (Keys.mainClass in Runtime).value,
 			kapselVmOptions			:= Seq.empty,
+			kapselSystemProperties	:= Map.empty,
 		)
 
 	//------------------------------------------------------------------------------
