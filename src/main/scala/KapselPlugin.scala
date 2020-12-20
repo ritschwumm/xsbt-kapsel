@@ -89,15 +89,13 @@ object KapselPlugin extends AutoPlugin {
 				}
 
 			val kapselClassFile	= tempDir / kapselClassFileName
-			Using.urlInputStream(xu.classpath url kapselClassResource)(IO.transfer(_, kapselClassFile))
+			IO write (kapselClassFile, xu.classpath bytes kapselClassResource)
+			//Using.urlInputStream(xu.classpath url kapselClassResource)(IO.transfer(_, kapselClassFile))
 			val kapselSource	= kapselClassFile -> kapselClassFileName
 
-			val systemPropertyOptions	=
-				systemProperties.map { case (k, v) => "-D" + k + "=" + v }
+			val systemPropertyOptions	= xu.script systemProperties systemProperties
 
-			val assetSources	= assets map (_.flatPathMapping)
-
-			val classPath	= assetSources map (_._2)
+			val classPath	= assets map (_.name)
 			val manifest	=
 				xu.jar manifest (
 					MANIFEST_VERSION.toString	-> "1.0",
@@ -111,8 +109,9 @@ object KapselPlugin extends AutoPlugin {
 			streams.log info s"building kapsel file ${jarFile}"
 			jarFile.mkParentDirs()
 
+			val assetSources	= assets map (_.flatPathMapping)
+			val jarSources		= kapselSource +: assetSources
 			// TODO should we use fixed timestamps?
-			val jarSources	= kapselSource +: assetSources
 			if (makeExecutable) {
 				val tempJar	= tempDir / "kapsel.jar"
 				IO jar		(jarSources, tempJar, manifest, None)
