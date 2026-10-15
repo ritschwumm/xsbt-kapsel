@@ -6,7 +6,7 @@ sbtPlugin		:= true
 
 name			:= "xsbt-kapsel"
 organization	:= "de.djini"
-version			:= "0.6.0"
+version			:= "0.7.0"
 
 scalacOptions	++= Seq(
 	"-feature",
@@ -16,6 +16,6 @@ scalacOptions	++= Seq(
 )
 
 addSbtPlugin("de.djini" % "xsbt-util"		% "1.7.0")
-addSbtPlugin("de.djini" % "xsbt-classpath"	% "2.8.0")
+addSbtPlugin("de.djini" % "xsbt-classpath"	% "2.9.0")
 
 libraryDependencies	+= "de.djini" %	"kapsel-start" % "0.4.0"
